@@ -3,6 +3,8 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 require("dotenv").config();
 
+const jobRoutes = require("./routes/jobRoutes");
+
 const authRoutes = require("./routes/authRoutes");
 const protect = require("./middleware/authMiddleware");
 

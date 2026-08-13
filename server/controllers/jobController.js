@@ -1,0 +1,59 @@
+const Job = require("../models/job");
+
+const createJob = async (req, res) => {
+  try {
+    const {
+      title,
+      department,
+      description,
+      requiredSkills,
+      experience,
+      salaryRange,
+      location,
+    } = req.body;
+
+    // Check required fields
+    if (
+      !title ||
+      !department ||
+      !description ||
+      !requiredSkills ||
+      !experience ||
+      !location
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "Please provide all required job details",
+      });
+    }
+
+    // Create job
+    const job = await Job.create({
+      title,
+      department,
+      description,
+      requiredSkills,
+      experience,
+      salaryRange,
+      location,
+      recruiter: req.user.id,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Job created successfully",
+      job,
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
+module.exports = {
+  createJob,
+};
