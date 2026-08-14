@@ -23,6 +23,7 @@ app.get("/api/test", (req, res) => {
 
 // Authentication routes
 app.use("/api/auth", authRoutes);
+app.use("/api/jobs", jobRoutes);
 
 app.get("/api/protected", protect, (req, res) => {
     res.json({
