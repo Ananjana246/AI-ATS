@@ -53,7 +53,29 @@ const createJob = async (req, res) => {
     });
   }
 };
+  //get jobs
+const getJobs = async (req, res) => {
+  try {
+    const jobs = await Job.find({ status: "open" })
+      .populate("recruiter", "name email")
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: jobs.length,
+      jobs,
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
 
 module.exports = {
   createJob,
+  getJobs,
 };
