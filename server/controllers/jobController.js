@@ -103,8 +103,71 @@ const getJobById = async (req, res) => {
   }
 };
 
+// update job
+
+const updateJob = async (req, res) => {
+  try {
+    const job = await Job.findById(req.params.id);
+
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        message: "Job not found",
+      });
+    }
+
+    // Only the recruiter who created the job or an admin can update it
+    if (
+      req.user.role !== "admin" &&
+      job.recruiter.toString() !== req.user.id
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not allowed to update this job",
+      });
+    }
+
+    const {
+      title,
+      department,
+      description,
+      requiredSkills,
+      experience,
+      salaryRange,
+      location,
+      status,
+    } = req.body;
+
+    // Update only the fields that were provided
+    if (title !== undefined) job.title = title;
+    if (department !== undefined) job.department = department;
+    if (description !== undefined) job.description = description;
+    if (requiredSkills !== undefined) job.requiredSkills = requiredSkills;
+    if (experience !== undefined) job.experience = experience;
+    if (salaryRange !== undefined) job.salaryRange = salaryRange;
+    if (location !== undefined) job.location = location;
+    if (status !== undefined) job.status = status;
+
+    await job.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Job updated successfully",
+      job,
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
 module.exports = {
   createJob,
   getJobs,
   getJobById,
+  updateJob,
 };
