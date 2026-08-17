@@ -1,5 +1,5 @@
 const express = require("express");
-const { createJob, getJobs, getJobById, updateJob } = require("../controllers/jobController");
+const { createJob, getJobs, getJobById, updateJob, closeJob } = require("../controllers/jobController");
 const protect = require("../middleware/authMiddleware");
 const authorizeRoles = require("../middleware/roleMiddleware");
 
@@ -15,6 +15,14 @@ router.put(
     protect,
     authorizeRoles("recruiter", "admin"),
     updateJob
+  );
+
+  // Close a job - owner/admin only
+router.patch(
+    "/:id/close",
+    protect,
+    authorizeRoles("recruiter", "admin"),
+    closeJob
   );
   
 module.exports = router;

@@ -165,9 +165,51 @@ const updateJob = async (req, res) => {
   }
 };
 
+const closeJob = async (req, res) => {
+  try {
+    const job = await Job.findById(req.params.id);
+
+    if (!job) {
+      return res.status(404).json({
+        success: false,
+        message: "Job not found",
+      });
+    }
+
+    // Only the recruiter who created the job or an admin can close it
+    if (
+      req.user.role !== "admin" &&
+      job.recruiter.toString() !== req.user.id
+    ) {
+      return res.status(403).json({
+        success: false,
+        message: "You are not allowed to close this job",
+      });
+    }
+
+    job.status = "closed";
+
+    await job.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Job closed successfully",
+      job,
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
 module.exports = {
   createJob,
   getJobs,
   getJobById,
   updateJob,
+  closeJob,
 };
